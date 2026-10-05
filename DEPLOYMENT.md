@@ -1,12 +1,13 @@
 # Deployment policy
 
-GitHub `main` is the source of truth for this site.
+GitHub `main` is the single source of truth for this site. ChatGPT performs coding and deployment orchestration; GitHub Actions / automatic deployment is intentionally not used.
 
-Production changes follow this order:
+Production flow:
 
-1. Change and commit files in GitHub.
-2. On the server, fetch/pull `origin/main` into `/srv/sites/juwon-english`.
-3. Run `docker compose up -d` if application or compose files changed.
-4. Verify local and public HTTPS health.
+1. Commit the change to GitHub `main`.
+2. Identify the full commit SHA.
+3. Run `site-deploy juwon-english <sha>` on the server.
+4. The runner verifies the SHA belongs to `origin/main`, runs `docker compose config -q`, resets the production tree to that SHA, applies `docker compose up -d --remove-orphans`, and checks local/public health.
+5. Deployment state is recorded in the Manager DB. Failed activation or health checks automatically roll back to the previous SHA.
 
-Do not leave production-only edits uncommitted on the server.
+Do not edit production source directly on the server. Do not use `git pull` as the production deployment primitive.
