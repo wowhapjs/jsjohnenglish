@@ -1,0 +1,9 @@
+services:
+  web:
+    image: nginx:alpine
+    container_name: juwon-english
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:31002:80"
+    volumes:
+      - ./app:/usr/share/nginx/html:ro
