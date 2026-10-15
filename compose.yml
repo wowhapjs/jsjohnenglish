@@ -1,9 +1,16 @@
 services:
   web:
-    image: nginx:alpine
-    container_name: juwon-english
+    image: node:22-alpine
+    container_name: "${CONTAINER_NAME:-juwon-english}"
     restart: unless-stopped
+    command: ["node", "--disable-warning=ExperimentalWarning", "/app/server.js"]
+    environment:
+      PORT: "3000"
+      WORDSTUDY_DB: "/data/wordstudy.sqlite"
     ports:
-      - "127.0.0.1:31002:80"
+      - "127.0.0.1:${HOST_PORT:-31002}:3000"
     volumes:
-      - ./app:/usr/share/nginx/html:ro
+      - ./app:/app:ro
+      - wordstudy_data:/data
+volumes:
+  wordstudy_data:
